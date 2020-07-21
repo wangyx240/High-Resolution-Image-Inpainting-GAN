@@ -1,7 +1,7 @@
 # High Resolution Image Inpainting 
 Unofficial Pytorch Re-implementation of "<a href="https://arxiv.org/abs/2005.09704">Contextual Residual Aggregation for Ultra High-Resolution Image Inpainting</a>"(CVPR 2020 Oral).
 
-The code is based on inplementation of <a href="https://github.com/zhaoyuzhi/deepfillv2">deepfillv2</a>. 
+The code is based on implementation of <a href="https://github.com/zhaoyuzhi/deepfillv2">deepfillv2</a>. Thanks for the great job.
 
 The project is still in progress, please feel free to contact me if there is any problem.
 
