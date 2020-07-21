@@ -29,6 +29,9 @@ python train.py     --multi_gpu True
                     --gpu_ids [the ids of your multi-GPUs]
 ```
 Default training process uses hinge loss as the D_loss, also provide Wgan-GP in the code.
+
+Modify train.py to change other training parameters. Modify dataset.py to change the size of free-form mask.
+
 ### Testing
 To do
 ### Pre-trained model
