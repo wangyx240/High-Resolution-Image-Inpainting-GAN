@@ -6,7 +6,7 @@ The code is based on implementation of <a href="https://github.com/zhaoyuzhi/dee
 The project is still in progress, please feel free to contact me if there is any problem.
 
 ## Implementation
-Except Contextual Residual Aggregation(CRA) and Light-Weight GatedConvolution in the paper, also add Residual network structure, SN-PatchGAN in this project.
+Besides Contextual Residual Aggregation(CRA) and Light-Weight GatedConvolution in the paper, also add Residual network structure, SN-PatchGAN in this project.
 ### Preparing
 Before running, please ensure the environment is `Python 3.6` and `PyTorch 1.2.0`.
 
