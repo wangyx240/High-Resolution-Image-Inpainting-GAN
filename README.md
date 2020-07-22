@@ -30,17 +30,17 @@ python train.py     --multi_gpu True
 ```
 Default training process uses hinge loss as the D_loss, also provide Wgan-GP in the code.
 
-Modify train.py to change other training parameters. Modify dataset.py to change the size of free-form mask.
+To change other training parameters, please modify train.py. You can also design your own mask through dataset.py
 
 ### Testing
 To do
 ### Pre-trained model
-Still in training
+Still in training......
 ### Sample images
 To do
 ### Acknowledgement & Reference
 
-https://github.com/zhaoyuzhi/deepfillv2
+[1] https://github.com/zhaoyuzhi/deepfillv2
 
 ```bash
 @misc{yi2020contextual,
@@ -51,6 +51,8 @@ https://github.com/zhaoyuzhi/deepfillv2
     archivePrefix={arXiv},
     primaryClass={cs.CV}
 }
+```
+```bash
 @inproceedings{yu2019free,
   title={Free-form image inpainting with gated convolution},
   author={Yu, Jiahui and Lin, Zhe and Yang, Jimei and Shen, Xiaohui and Lu, Xin and Huang, Thomas S},
