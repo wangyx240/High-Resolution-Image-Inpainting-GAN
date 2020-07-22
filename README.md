@@ -10,7 +10,7 @@ Besides Contextual Residual Aggregation(CRA) and Light-Weight GatedConvolution i
 ### Preparing
 Before running, please ensure the environment is `Python 3.6` and `PyTorch 1.2.0`.
 
-Dataset: <a href="http://places2.csail.mit.edu/download.html">Places365-Standard</a>
+Dataset: Download <a href="http://places2.csail.mit.edu/download.html">Places365-Standard</a> for Training and Testing.
 
 ### Training
 ```bash
@@ -30,10 +30,12 @@ python train.py     --multi_gpu True
 ```
 Default training process uses hinge loss as the D_loss, also provide Wgan-GP in the code.
 
+For input size of 512x512 and GPU with memory of 11GB, recommended batchsize is 4.
+
 To change other training parameters, please modify train.py. You can also design your own mask through dataset.py
 
 ### Testing
-To do
+In progress......
 ### Pre-trained model
 Still in training......
 ### Sample images
