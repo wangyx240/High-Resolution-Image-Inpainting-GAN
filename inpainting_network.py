@@ -145,26 +145,25 @@ class GatedGenerator(nn.Module):
         first_masked_img = img_256 * (1 - mask_256) + mask_256
         first_in = torch.cat((first_masked_img, mask_256), 1)  # in: [B, 4, H, W]
         first_out = self.coarse(first_in)  # out: [B, 3, H, W]
-        first_out = F.interpolate(first_out, size=[512,512], mode='nearest')
+        first_out = F.interpolate(first_out, size=[512,512], mode='bilinear')
         # Refinement
         second_in = img * (1 - mask) + first_out * mask
         pl1 = self.refinement1(second_in)                   #out: [B, 32, 256, 256]
         pl2 = self.refinement2(pl1)                         #out: [B, 64, 128, 128]
         second_out = self.refinement3(pl2)                  #out: [B, 128, 64, 64]
-        pl3 = self.refinement4(second_out) + second_out                #out: [B, 128, 64, 64]
-        second_out = self.refinement5(pl3) + pl3
-        second_out = self.refinement6(second_out) +second_out           #out: [B, 128, 64, 64]
+        second_out = self.refinement4(second_out) + second_out                #out: [B, 128, 64, 64]
+        second_out = self.refinement5(second_out) + second_out
+        pl3 = self.refinement6(second_out) +second_out           #out: [B, 128, 64, 64]
         #Calculate Attention
-        P = F.interpolate(pl3, size=[32,32], mode='bilinear')
         patch_fb = self.cal_patch(32, mask, 512)
-        att = self.compute_attention(P, patch_fb)
+        att = self.compute_attention(pl3, patch_fb)
 
-        second_out = torch.cat((second_out, self.conv_pl3(self.attention_transfer(pl3, att))), 1) #out: [B, 256, 64, 64]
+        second_out = torch.cat((pl3, self.conv_pl3(self.attention_transfer(pl3, att))), 1) #out: [B, 256, 64, 64]
         second_out = self.refinement7(second_out)                                                 #out: [B, 64, 128, 128]
         second_out = torch.cat((second_out, self.conv_pl2(self.attention_transfer(pl2, att))), 1) #out: [B, 128, 128, 128]
         second_out = self.refinement8(second_out)                                                 #out: [B, 32, 256, 256]
         second_out = torch.cat((second_out, self.conv_pl1(self.attention_transfer(pl1, att))), 1) #out: [B, 64, 256, 256]
-        second_out = self.refinement9(second_out)  # out: [B, 3, H, W]
+        second_out = self.refinement9(second_out) # out: [B, 3, H, W]
         second_out = torch.clamp(second_out, 0, 1)
         return first_out, second_out
 
@@ -173,15 +172,15 @@ class GatedGenerator(nn.Module):
         patch_fb = pool(mask)  # out: [B, 1, 32, 32]
         return patch_fb
 
-    def compute_attention(self, feature, patch_fb):  # in: [B, C:32, 64, 64]
+    def compute_attention(self, feature, patch_fb):  # in: [B, C:128, 64, 64]
         b = feature.shape[0]
-        feature = F.interpolate(feature, scale_factor=0.5, mode='bilinear')  # in: [B, C:32, 32, 32]
+        feature = F.interpolate(feature, scale_factor=0.5, mode='bilinear')  # in: [B, C:128, 32, 32]
         p_fb = torch.reshape(patch_fb, [b, 32 * 32, 1])
         p_matrix = torch.bmm(p_fb, (1 - p_fb).permute([0, 2, 1]))
-        f = feature.permute([0, 2, 3, 1]).reshape([b, 32 * 32, 32])
+        f = feature.permute([0, 2, 3, 1]).reshape([b, 32 * 32, 128])
         c = self.cosine_Matrix(f, f) * p_matrix
         s = F.softmax(c, dim=2) * p_matrix
-        return s.cuda()
+        return s
 
     def attention_transfer(self, feature, attention):  # feature: [B, C, H, W]
         b_num, c, h, w = feature.shape

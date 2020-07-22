@@ -15,8 +15,8 @@ if __name__ == "__main__":
     parser.add_argument('--gpu_ids', type = str, default = "0", help = 'gpu ids: e.g. 0  0,1,2, 0,2. use -1 for CPU')
     parser.add_argument('--cudnn_benchmark', type = bool, default = True, help = 'True for unchanged input data type')
     parser.add_argument('--checkpoint_interval', type = int, default = 1, help = 'interval between model checkpoints')
-    parser.add_argument('--load_name_g', type = str, default = './models/deepfillv2_WGAN_epoch1_batchsize4.pth', help = 'load model name')#./models/deepfillv2_WGAN_epoch2_batchsize4.pth
-    parser.add_argument('--load_name_d', type=str, default='./models/discriminator_WGAN_epoch1_batchsize4.pth', help='load model name')#./models/discriminator_WGAN_epoch2_batchsize4.pth
+    parser.add_argument('--load_name_g', type = str, default = '', help = 'load model name')#./models/deepfillv2_WGAN_epoch2_batchsize4.pth
+    parser.add_argument('--load_name_d', type=str, default='', help='load model name')#./models/discriminator_WGAN_epoch2_batchsize4.pth
     # Training parameters
     parser.add_argument('--epochs', type = int, default = 40, help = 'number of epochs of training')
     parser.add_argument('--batch_size', type = int, default = 4, help = 'size of the batches')
@@ -32,8 +32,8 @@ if __name__ == "__main__":
     parser.add_argument('--latent_channels', type = int, default = 32, help = 'latent channels')
     parser.add_argument('--pad_type', type = str, default = 'replicate', help = 'the padding type')
     parser.add_argument('--activation', type = str, default = 'elu', help = 'the activation type')
-    parser.add_argument('--norm1', type = str, default = 'in', help = 'normalization type')
-    parser.add_argument('--norm', type=str, default='in', help='normalization type')
+    parser.add_argument('--norm1', type = str, default = 'none', help = 'normalization type')
+    parser.add_argument('--norm', type=str, default='none', help='normalization type')
     parser.add_argument('--init_type', type = str, default = 'kaiming', help = 'the initialization type')
     parser.add_argument('--init_gain', type = float, default = 0.2, help = 'the initialization gain')
     # Dataset parameters

@@ -92,21 +92,21 @@ def WGAN_trainer(opt):
             param_group['lr'] = lr
     
     # Save the model if pre_train == True
-    def save_model(net, epoch, opt, is_D=False):
+    def save_model(net, epoch, opt, batch=0, is_D=False):
         """Save the model at "checkpoint_interval" and its multiple"""
         if is_D==True:
-            model_name = 'discriminator_WGAN_epoch%d_batchsize%d.pth' % (epoch + 1, opt.batch_size)
+            model_name = 'discriminator_WGAN_epoch%d_batch%d.pth' % (epoch + 1, batch)
         else:
-            model_name = 'deepfillv2_WGAN_epoch%d_batchsize%d.pth' % (epoch+1, opt.batch_size)
+            model_name = 'deepfillv2_WGAN_epoch%d_batch%d.pth' % (epoch+1, batch)
         model_name = os.path.join(save_folder, model_name)
         if opt.multi_gpu == True:
             if epoch % opt.checkpoint_interval == 0:
                 torch.save(net.module.state_dict(), model_name)
-                print('The trained model is successfully saved at epoch %d' % (epoch))
+                print('The trained model is successfully saved at epoch %d batch %d' % (epoch, batch))
         else:
             if epoch % opt.checkpoint_interval == 0:
                 torch.save(net.state_dict(), model_name)
-                print('The trained model is successfully saved at epoch %d' % (epoch))
+                print('The trained model is successfully saved at epoch %d batch %d' % (epoch, batch))
     
     # ----------------------------------------
     #       Initialize training dataset
@@ -207,8 +207,8 @@ def WGAN_trainer(opt):
                 img_copy = cv2.cvtColor(img_copy, cv2.COLOR_RGB2BGR)
                 cv2.imwrite(save_img_path, img_copy)
             if (batch_idx + 1) % 5000 == 0:
-                save_model(generator, epoch, opt)
-                save_model(discriminator, epoch, opt, is_D=True)
+                save_model(generator, epoch, opt, batch_idx+1)
+                save_model(discriminator, epoch, opt, batch_idx+1, is_D=True)
 
 
         #Learning rate decrease

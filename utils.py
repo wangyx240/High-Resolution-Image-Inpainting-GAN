@@ -5,6 +5,7 @@ import torch
 import torch.nn as nn
 import torchvision as tv
 import torchvision.models as models
+from inpainting_network import *
 
 # ----------------------------------------
 #                 Network
