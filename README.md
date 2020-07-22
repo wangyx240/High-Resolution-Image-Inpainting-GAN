@@ -38,7 +38,9 @@ To do
 Still in training
 ### Sample images
 To do
-### Acknowledgement
+### Acknowledgement & Reference
+
+https://github.com/zhaoyuzhi/deepfillv2
 
 ```bash
 @misc{yi2020contextual,
