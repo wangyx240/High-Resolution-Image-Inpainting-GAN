@@ -1,6 +1,9 @@
 import argparse
 import os
 
+import torch
+import torch.multiprocessing as mp
+
 if __name__ == "__main__":
 
     # ----------------------------------------
@@ -12,7 +15,7 @@ if __name__ == "__main__":
     parser.add_argument('--sample_path', type = str, default = './samples', help = 'training samples path that is a folder')
     parser.add_argument('--gan_type', type = str, default = 'WGAN', help = 'the type of GAN for training')
     parser.add_argument('--multi_gpu', type = bool, default = False, help = 'nn.Parallel needs or not')
-    parser.add_argument('--gpu_ids', type = str, default = "0", help = 'gpu ids: e.g. 0  0,1,2, 0,2. use -1 for CPU')
+    parser.add_argument('--gpu_ids', type = str, default = "0,1,2,3", help = 'gpu ids: e.g. 0  0,1,2, 0,2. use -1 for CPU')
     parser.add_argument('--cudnn_benchmark', type = bool, default = True, help = 'True for unchanged input data type')
     parser.add_argument('--checkpoint_interval', type = int, default = 1, help = 'interval between model checkpoints')
     parser.add_argument('--load_name_g', type = str, default = '', help = 'load model name')#./models/deepfillv2_WGAN_epoch2_batchsize4.pth
@@ -39,13 +42,20 @@ if __name__ == "__main__":
     # Dataset parameters
     parser.add_argument('--baseroot', type = str, default = './dataset/data_large', help = 'the training folder: val_256, test_large, data_256')
     parser.add_argument('--mask_type', type = str, default = 'free_form', help = 'mask type')
+    parser.add_argument('--mask_path', type = str, default = None, help = 'the mask folder')
     parser.add_argument('--imgsize', type = int, default = 512, help = 'size of image')
     parser.add_argument('--margin', type = int, default = 10, help = 'margin of image')
     parser.add_argument('--bbox_shape', type = int, default = 30, help = 'margin of image for bbox mask')
+
+    # DistributedDataParallel
+    parser.add_argument('--dist_url', type=str, default=None, help = 'DistributedDataParallel init method')
+    parser.add_argument('--rank', type = int, default = None, help = 'DistributedDataParallel node rank')
+    parser.add_argument('--world_size', type = int, default = 0, help = 'Determine world-size for DDP')
+    parser.add_argument('--multi_node', type = bool, default = False, help = "Enabel multi-node training using DistributedDataParallel")
+
     opt = parser.parse_args()
     print(opt)
-    
-    '''
+
     # ----------------------------------------
     #       Choose CUDA visible devices
     # ----------------------------------------
@@ -53,12 +63,19 @@ if __name__ == "__main__":
         os.environ["CUDA_VISIBLE_DEVICES"] = opt.gpu_ids
     else:
         os.environ["CUDA_VISIBLE_DEVICES"] = "0"
-    '''
-    
+
     # Enter main function
     import trainer
-    if opt.gan_type == 'WGAN':
-        trainer.WGAN_trainer(opt)
-    if opt.gan_type == 'LSGAN':
-        trainer.LSGAN_trainer(opt)
-    
+
+    print("Enable to use", torch.cuda.device_count(), "gpus")
+
+    if opt.multi_node == True:
+        if opt.gan_type == 'WGAN':
+            mp.spawn(trainer.WGAN_trainer, nprocs=torch.cuda.device_count(), args=(opt,))
+        if opt.gan_type == 'LSGAN':
+            mp.spawn(trainer.LSGAN_trainer, nprocs=torch.cuda.device_count(), args=(opt,))
+    else:
+        if opt.gan_type == 'WGAN':
+            trainer.WGAN_trainer(opt.gpu_ids, opt)
+        if opt.gan_type == 'LSGAN':
+            trainer.LSGAN_trainer(opt.gpu_ids, opt)
